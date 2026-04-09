@@ -1,0 +1,11 @@
+[package]
+name = "mock-core"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+wasm = ["dep:regex-lite"]
+
+[dependencies]
+regex = "1"
+regex-lite = { version = "0.1", optional = true }
