@@ -1,3 +1,9 @@
 [workspace]
 members = ["crates/mock-core", "crates/mock-cli", "crates/mock-wasm"]
 resolver = "2"
+
+[profile.release.package.mock-wasm]
+opt-level = "s"
+
+[profile.release]
+lto = true
