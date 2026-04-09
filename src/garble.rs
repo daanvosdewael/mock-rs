@@ -329,7 +329,7 @@ pub fn garble_word(word: &str) -> String {
 /// Replace all garble dictionary matches in `input` using a linear scanner.
 /// Scans left-to-right, trying longest keys first at each position.
 /// Respects position constraints (Start/End) on entries.
-pub(crate) fn garble_replace_all(input: &str) -> String {
+fn garble_replace_all(input: &str) -> String {
     let bytes = input.as_bytes();
     let len = bytes.len();
     let mut result = String::with_capacity(input.len());
