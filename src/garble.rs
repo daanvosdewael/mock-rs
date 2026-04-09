@@ -316,6 +316,16 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
     },
 ];
 
+pub fn garble_word(word: &str) -> String {
+    let lower = word.to_lowercase();
+    let replaced = garble_replace_all(&lower);
+    if replaced == lower {
+        word.to_string()
+    } else {
+        replaced
+    }
+}
+
 /// Replace all garble dictionary matches in `input` using a linear scanner.
 /// Scans left-to-right, trying longest keys first at each position.
 /// Respects position constraints (Start/End) on entries.
@@ -479,5 +489,40 @@ mod tests {
     fn end_entry_beats_shorter_any() {
         assert_eq!(garble_replace_all("ring"), "rihngh");
         assert_eq!(garble_replace_all("vrijheid"), "vrijhheihdt");
+    }
+
+    #[test]
+    fn dress_non_matching_word_unchanged() {
+        assert_eq!(garble_word("test"), "test");
+        assert_eq!(garble_word("abc"), "abc");
+        assert_eq!(garble_word(""), "");
+    }
+
+    #[test]
+    fn dress_matching_word_replaced() {
+        assert_eq!(garble_word("aa"), "aah");
+    }
+
+    #[test]
+    fn dress_case_insensitive() {
+        assert_eq!(garble_word("AA"), "aah");
+        assert_eq!(garble_word("Aa"), "aah");
+        assert_eq!(garble_word("HELLO"), "heehllo");
+    }
+
+    #[test]
+    fn dress_longer_pattern_priority() {
+        assert_eq!(garble_word("aat"), "aahtd");
+    }
+
+    #[test]
+    fn dress_key_in_word() {
+        assert_eq!(garble_word("hello"), "heehllo");
+        assert_eq!(garble_word("foobar"), "foohwbar");
+    }
+
+    #[test]
+    fn dress_multiple_replacements() {
+        assert_eq!(garble_word("aaz"), "aahzs");
     }
 }
