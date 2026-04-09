@@ -17,10 +17,26 @@ struct GarbleEntry {
 
 use Position::*;
 
-/// All 43 garble phonetic dictionary entries.
-/// Keys are lowercase; sorted by descending key length for greedy matching.
+/// All 58 garble phonetic dictionary entries.
+/// Sorted by descending key length for greedy matching.
 const GARBLE_PHRASES: &[GarbleEntry] = &[
+    // 4-letter keys (position-aware suffixes)
+    GarbleEntry {
+        key: "heid",
+        replacement: "heihdt",
+        position: End,
+    },
+    GarbleEntry {
+        key: "lijk",
+        replacement: "lijck",
+        position: End,
+    },
     // 3-letter keys
+    GarbleEntry {
+        key: "aai",
+        replacement: "aaih",
+        position: Any,
+    },
     GarbleEntry {
         key: "aat",
         replacement: "aahtd",
@@ -52,6 +68,11 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
         position: Any,
     },
     GarbleEntry {
+        key: "ing",
+        replacement: "ihngh",
+        position: End,
+    },
+    GarbleEntry {
         key: "nou",
         replacement: "nouwh",
         position: Any,
@@ -59,6 +80,11 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
     GarbleEntry {
         key: "oet",
         replacement: "oehdt",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "sch",
+        replacement: "sgch",
         position: Any,
     },
     GarbleEntry {
@@ -98,6 +124,11 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
         position: Any,
     },
     GarbleEntry {
+        key: "be",
+        replacement: "beh",
+        position: Start,
+    },
+    GarbleEntry {
         key: "ch",
         replacement: "gch",
         position: Any,
@@ -123,6 +154,11 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
         position: Any,
     },
     GarbleEntry {
+        key: "ei",
+        replacement: "eih",
+        position: Any,
+    },
+    GarbleEntry {
         key: "el",
         replacement: "eehl",
         position: Any,
@@ -138,6 +174,16 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
         position: Any,
     },
     GarbleEntry {
+        key: "eu",
+        replacement: "euh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ge",
+        replacement: "geh",
+        position: Start,
+    },
+    GarbleEntry {
         key: "ie",
         replacement: "ieh",
         position: Any,
@@ -145,6 +191,11 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
     GarbleEntry {
         key: "ig",
         replacement: "igch",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ij",
+        replacement: "ijh",
         position: Any,
     },
     GarbleEntry {
@@ -193,8 +244,18 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
         position: Any,
     },
     GarbleEntry {
+        key: "ng",
+        replacement: "ngh",
+        position: Any,
+    },
+    GarbleEntry {
         key: "nu",
         replacement: "nuuh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "oe",
+        replacement: "oeh",
         position: Any,
     },
     GarbleEntry {
@@ -218,6 +279,11 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
         position: Any,
     },
     GarbleEntry {
+        key: "ou",
+        replacement: "ouw",
+        position: Any,
+    },
+    GarbleEntry {
         key: "ov",
         replacement: "oowfv",
         position: Any,
@@ -225,6 +291,16 @@ const GARBLE_PHRASES: &[GarbleEntry] = &[
     GarbleEntry {
         key: "ro",
         replacement: "roow",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ui",
+        replacement: "uih",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "uw",
+        replacement: "uwh",
         position: Any,
     },
     GarbleEntry {
@@ -289,8 +365,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn dictionary_has_43_entries() {
-        assert_eq!(GARBLE_PHRASES.len(), 43);
+    fn dictionary_has_58_entries() {
+        assert_eq!(GARBLE_PHRASES.len(), 58);
     }
 
     #[test]
@@ -339,15 +415,69 @@ mod tests {
     }
 
     #[test]
-    fn all_entries_replace_correctly() {
+    fn all_any_entries_replace_correctly() {
         for entry in GARBLE_PHRASES {
-            assert_eq!(
-                garble_replace_all(entry.key),
-                entry.replacement,
-                "replacement for '{}' should be '{}'",
-                entry.key,
-                entry.replacement,
-            );
+            if entry.position == Any {
+                assert_eq!(
+                    garble_replace_all(entry.key),
+                    entry.replacement,
+                    "replacement for '{}' should be '{}'",
+                    entry.key,
+                    entry.replacement,
+                );
+            }
         }
+    }
+
+    #[test]
+    fn start_entries_match_at_beginning() {
+        assert_eq!(garble_replace_all("ge"), "geh");
+        assert_eq!(garble_replace_all("geluk"), "gehluk");
+        assert_eq!(garble_replace_all("be"), "beh");
+        assert_eq!(garble_replace_all("begin"), "behgihhn");
+    }
+
+    #[test]
+    fn start_entries_skip_mid_word() {
+        assert_eq!(garble_replace_all("sage"), "sage");
+        assert_eq!(garble_replace_all("robe"), "roowbe");
+    }
+
+    #[test]
+    fn end_entries_match_at_end() {
+        assert_eq!(garble_replace_all("heid"), "heihdt");
+        assert_eq!(garble_replace_all("lijk"), "lijck");
+        assert_eq!(garble_replace_all("ing"), "ihngh");
+    }
+
+    #[test]
+    fn end_entries_skip_mid_word() {
+        assert_eq!(garble_replace_all("heiden"), "heihdehn");
+    }
+
+    #[test]
+    fn new_diphthongs() {
+        assert_eq!(garble_replace_all("ui"), "uih");
+        assert_eq!(garble_replace_all("eu"), "euh");
+        assert_eq!(garble_replace_all("ou"), "ouw");
+        assert_eq!(garble_replace_all("ei"), "eih");
+        assert_eq!(garble_replace_all("ij"), "ijh");
+        assert_eq!(garble_replace_all("oe"), "oeh");
+        assert_eq!(garble_replace_all("ng"), "ngh");
+        assert_eq!(garble_replace_all("uw"), "uwh");
+        assert_eq!(garble_replace_all("sch"), "sgch");
+        assert_eq!(garble_replace_all("aai"), "aaih");
+    }
+
+    #[test]
+    fn sch_beats_ch() {
+        assert_eq!(garble_replace_all("sch"), "sgch");
+        assert_eq!(garble_replace_all("school"), "sgchoohwl");
+    }
+
+    #[test]
+    fn end_entry_beats_shorter_any() {
+        assert_eq!(garble_replace_all("ring"), "rihngh");
+        assert_eq!(garble_replace_all("vrijheid"), "vrijhheihdt");
     }
 }
