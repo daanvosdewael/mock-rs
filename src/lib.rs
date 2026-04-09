@@ -1,7 +1,7 @@
 mod alternate;
 mod correct;
 mod dress;
-mod phrases;
+mod garble;
 
 pub use alternate::alternate_word;
 pub use correct::correct_word;

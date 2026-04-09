@@ -1,4 +1,4 @@
-use crate::phrases::garble_replace_all;
+use crate::garble::garble_replace_all;
 
 pub fn dress_word(word: &str) -> String {
     let lower = word.to_lowercase();
