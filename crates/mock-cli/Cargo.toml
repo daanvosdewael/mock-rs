@@ -9,4 +9,3 @@ path = "src/main.rs"
 
 [dependencies]
 mock-core = { path = "../mock-core" }
-clap = { version = "4", features = ["derive"] }

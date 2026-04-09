@@ -1,21 +1,48 @@
 use std::io::{self, Read};
 
-use clap::Parser;
-
-#[derive(Parser)]
-#[command(name = "mock", about = "Mock text with alternating case")]
-struct Cli {
-    /// Enable garble (phonetic replacement) mode
-    #[arg(short, long)]
-    garble: bool,
-
-    /// Input text to mock (reads from stdin if omitted)
-    input: Option<String>,
+fn print_help() {
+    eprintln!("Usage: mock [OPTIONS] [INPUT]");
+    eprintln!();
+    eprintln!("Mock text with alternating case");
+    eprintln!();
+    eprintln!("Arguments:");
+    eprintln!("  [INPUT]  Input text to mock (reads from stdin if omitted)");
+    eprintln!();
+    eprintln!("Options:");
+    eprintln!("  -g, --garble  Enable garble (phonetic replacement) mode");
+    eprintln!("  -h, --help    Print help");
 }
 
 fn main() {
-    let cli = Cli::parse();
-    let input = match cli.input {
+    let mut garble = false;
+    let mut input = None;
+
+    for arg in std::env::args().skip(1) {
+        match arg.as_str() {
+            "-h" | "--help" => {
+                print_help();
+                return;
+            }
+            "-g" | "--garble" => garble = true,
+            s if s.starts_with('-') => {
+                eprintln!("error: unexpected argument '{s}'");
+                eprintln!();
+                print_help();
+                std::process::exit(2);
+            }
+            _ => {
+                if input.is_some() {
+                    eprintln!("error: unexpected argument '{arg}'");
+                    eprintln!();
+                    print_help();
+                    std::process::exit(2);
+                }
+                input = Some(arg);
+            }
+        }
+    }
+
+    let input = match input {
         Some(text) => text,
         None => {
             let mut buf = String::new();
@@ -30,6 +57,6 @@ fn main() {
         eprintln!("error: no input provided");
         std::process::exit(1);
     }
-    let output = mock_core::build_mocking_text(input, cli.garble);
+    let output = mock_core::build_mocking_text(input, garble);
     println!("{output}");
 }
