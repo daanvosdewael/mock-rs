@@ -1,0 +1,12 @@
+[package]
+name = "mock-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "mock"
+path = "src/main.rs"
+
+[dependencies]
+mock-core = { path = "../mock-core" }
+clap = { version = "4", features = ["derive"] }
