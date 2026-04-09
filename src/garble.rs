@@ -1,65 +1,274 @@
+/// Position constraint for a garble dictionary entry.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum Position {
+    /// Matches at any position in the word.
+    Any,
+    /// Matches only at the start of the word (byte offset 0).
+    Start,
+    /// Matches only at the end of the word (key reaches last byte).
+    End,
+}
+
+struct GarbleEntry {
+    key: &'static str,
+    replacement: &'static str,
+    position: Position,
+}
+
+use Position::*;
+
 /// All 43 garble phonetic dictionary entries.
 /// Keys are lowercase; sorted by descending key length for greedy matching.
-const GARBLE_PHRASES: &[(&str, &str)] = &[
-    ("aat", "aahtd"),
-    ("ard", "ahrdt"),
-    ("den", "dehn"),
-    ("heb", "hebdt"),
-    ("ijk", "ijck"),
-    ("ijn", "ijhn"),
-    ("nou", "nouwh"),
-    ("oet", "oehdt"),
-    ("tje", "tjuh"),
-    ("van", "fahn"),
-    ("ver", "fehr"),
-    ("voo", "fooh"),
-    ("aa", "aah"),
-    ("ah", "ahdt"),
-    ("as", "ahsz"),
-    ("ch", "gch"),
-    ("de", "deh"),
-    ("dt", "dtdttd"),
-    ("ee", "eeh"),
-    ("eg", "egch"),
-    ("el", "eehl"),
-    ("en", "ehn"),
-    ("et", "etd"),
-    ("ie", "ieh"),
-    ("ig", "igch"),
-    ("ik", "icck"),
-    ("il", "ihl"),
-    ("in", "ihhn"),
-    ("is", "ishj"),
-    ("it", "iht"),
-    ("ja", "jaah"),
-    ("je", "jeh"),
-    ("kk", "ckk"),
-    ("me", "meh"),
-    ("nu", "nuuh"),
-    ("og", "ogch"),
-    ("om", "ohmm"),
-    ("oo", "oohw"),
-    ("op", "ohp"),
-    ("ov", "oowfv"),
-    ("ro", "roow"),
-    ("ys", "yszz"),
-    ("z", "zs"),
+const GARBLE_PHRASES: &[GarbleEntry] = &[
+    // 3-letter keys
+    GarbleEntry {
+        key: "aat",
+        replacement: "aahtd",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ard",
+        replacement: "ahrdt",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "den",
+        replacement: "dehn",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "heb",
+        replacement: "hebdt",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ijk",
+        replacement: "ijck",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ijn",
+        replacement: "ijhn",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "nou",
+        replacement: "nouwh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "oet",
+        replacement: "oehdt",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "tje",
+        replacement: "tjuh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "van",
+        replacement: "fahn",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ver",
+        replacement: "fehr",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "voo",
+        replacement: "fooh",
+        position: Any,
+    },
+    // 2-letter keys
+    GarbleEntry {
+        key: "aa",
+        replacement: "aah",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ah",
+        replacement: "ahdt",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "as",
+        replacement: "ahsz",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ch",
+        replacement: "gch",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "de",
+        replacement: "deh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "dt",
+        replacement: "dtdttd",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ee",
+        replacement: "eeh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "eg",
+        replacement: "egch",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "el",
+        replacement: "eehl",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "en",
+        replacement: "ehn",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "et",
+        replacement: "etd",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ie",
+        replacement: "ieh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ig",
+        replacement: "igch",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ik",
+        replacement: "icck",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "il",
+        replacement: "ihl",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "in",
+        replacement: "ihhn",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "is",
+        replacement: "ishj",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "it",
+        replacement: "iht",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ja",
+        replacement: "jaah",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "je",
+        replacement: "jeh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "kk",
+        replacement: "ckk",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "me",
+        replacement: "meh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "nu",
+        replacement: "nuuh",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "og",
+        replacement: "ogch",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "om",
+        replacement: "ohmm",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "oo",
+        replacement: "oohw",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "op",
+        replacement: "ohp",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ov",
+        replacement: "oowfv",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ro",
+        replacement: "roow",
+        position: Any,
+    },
+    GarbleEntry {
+        key: "ys",
+        replacement: "yszz",
+        position: Any,
+    },
+    // 1-letter keys
+    GarbleEntry {
+        key: "z",
+        replacement: "zs",
+        position: Any,
+    },
 ];
 
 /// Replace all garble dictionary matches in `input` using a linear scanner.
 /// Scans left-to-right, trying longest keys first at each position.
+/// Respects position constraints (Start/End) on entries.
 pub(crate) fn garble_replace_all(input: &str) -> String {
     let bytes = input.as_bytes();
+    let len = bytes.len();
     let mut result = String::with_capacity(input.len());
     let mut i = 0;
-    while i < bytes.len() {
+    while i < len {
         let mut matched = false;
-        for &(key, replacement) in GARBLE_PHRASES {
-            if i + key.len() <= bytes.len()
-                && bytes[i..i + key.len()].eq_ignore_ascii_case(key.as_bytes())
+        for entry in GARBLE_PHRASES {
+            match entry.position {
+                Any => {}
+                Start => {
+                    if i != 0 {
+                        continue;
+                    }
+                }
+                End => {
+                    if i + entry.key.len() != len {
+                        continue;
+                    }
+                }
+            }
+            if i + entry.key.len() <= len
+                && bytes[i..i + entry.key.len()].eq_ignore_ascii_case(entry.key.as_bytes())
             {
-                result.push_str(replacement);
-                i += key.len();
+                result.push_str(entry.replacement);
+                i += entry.key.len();
                 matched = true;
                 break;
             }
@@ -88,12 +297,12 @@ mod tests {
     fn keys_sorted_by_descending_length() {
         for window in GARBLE_PHRASES.windows(2) {
             assert!(
-                window[0].0.len() >= window[1].0.len(),
+                window[0].key.len() >= window[1].key.len(),
                 "key '{}' (len {}) should come after '{}' (len {})",
-                window[1].0,
-                window[1].0.len(),
-                window[0].0,
-                window[0].0.len(),
+                window[1].key,
+                window[1].key.len(),
+                window[0].key,
+                window[0].key.len(),
             );
         }
     }
@@ -131,11 +340,13 @@ mod tests {
 
     #[test]
     fn all_entries_replace_correctly() {
-        for (key, expected) in GARBLE_PHRASES {
+        for entry in GARBLE_PHRASES {
             assert_eq!(
-                garble_replace_all(key),
-                *expected,
-                "replacement for '{key}' should be '{expected}'"
+                garble_replace_all(entry.key),
+                entry.replacement,
+                "replacement for '{}' should be '{}'",
+                entry.key,
+                entry.replacement,
             );
         }
     }
