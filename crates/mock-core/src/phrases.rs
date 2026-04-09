@@ -1,12 +1,5 @@
-use std::sync::LazyLock;
-
-#[cfg(not(feature = "wasm"))]
-use regex::Regex;
-#[cfg(feature = "wasm")]
-use regex_lite::Regex;
-
 /// All 43 garble phonetic dictionary entries.
-/// Keys are lowercase; sorted by descending key length for greedy regex matching.
+/// Keys are lowercase; sorted by descending key length for greedy matching.
 const GARBLE_PHRASES: &[(&str, &str)] = &[
     ("aat", "aahtd"),
     ("ard", "ahrdt"),
@@ -53,27 +46,33 @@ const GARBLE_PHRASES: &[(&str, &str)] = &[
     ("z", "zs"),
 ];
 
-static GARBLE_REGEX: LazyLock<Regex> = LazyLock::new(|| {
-    // Keys are already sorted by descending length in GARBLE_PHRASES,
-    // so we can join them directly for greedy matching.
-    let pattern: String = GARBLE_PHRASES
-        .iter()
-        .map(|(key, _)| *key)
-        .collect::<Vec<_>>()
-        .join("|");
-    Regex::new(&format!("(?i){pattern}")).expect("garble regex should compile")
-});
-
-pub(crate) fn garble_regex() -> &'static Regex {
-    &GARBLE_REGEX
-}
-
-pub(crate) fn garble_replacement(matched: &str) -> Option<&'static str> {
-    let lower = matched.to_lowercase();
-    GARBLE_PHRASES
-        .iter()
-        .find(|(key, _)| *key == lower)
-        .map(|(_, value)| *value)
+/// Replace all garble dictionary matches in `input` using a linear scanner.
+/// Scans left-to-right, trying longest keys first at each position.
+pub(crate) fn garble_replace_all(input: &str) -> String {
+    let bytes = input.as_bytes();
+    let mut result = String::with_capacity(input.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        let mut matched = false;
+        for &(key, replacement) in GARBLE_PHRASES {
+            if i + key.len() <= bytes.len()
+                && bytes[i..i + key.len()].eq_ignore_ascii_case(key.as_bytes())
+            {
+                result.push_str(replacement);
+                i += key.len();
+                matched = true;
+                break;
+            }
+        }
+        if !matched {
+            // Advance by one full UTF-8 character, not just one byte.
+            let ch = &input[i..];
+            let c = ch.chars().next().unwrap();
+            result.push(c);
+            i += c.len_utf8();
+        }
+    }
+    result
 }
 
 #[cfg(test)]
@@ -100,63 +99,42 @@ mod tests {
     }
 
     #[test]
-    fn regex_matches_known_keys() {
-        let re = garble_regex();
-        assert!(re.is_match("aa"));
-        assert!(re.is_match("ver"));
-        assert!(re.is_match("z"));
+    fn replaces_known_keys() {
+        assert_eq!(garble_replace_all("aa"), "aah");
+        assert_eq!(garble_replace_all("ver"), "fehr");
+        assert_eq!(garble_replace_all("z"), "zs");
     }
 
     #[test]
-    fn regex_is_case_insensitive() {
-        let re = garble_regex();
-        assert!(re.is_match("AA"));
-        assert!(re.is_match("Ver"));
-        assert!(re.is_match("Z"));
+    fn case_insensitive() {
+        assert_eq!(garble_replace_all("AA"), "aah");
+        assert_eq!(garble_replace_all("Ver"), "fehr");
+        assert_eq!(garble_replace_all("Z"), "zs");
     }
 
     #[test]
-    fn regex_prefers_longer_match() {
-        let re = garble_regex();
-        // "aat" should match as "aat" (not "aa" + "t")
-        let m = re.find("aat").unwrap();
-        assert_eq!(m.as_str(), "aat");
+    fn prefers_longer_match() {
+        assert_eq!(garble_replace_all("aat"), "aahtd");
     }
 
     #[test]
-    fn lookup_returns_correct_replacement() {
-        assert_eq!(garble_replacement("aa"), Some("aah"));
-        assert_eq!(garble_replacement("aat"), Some("aahtd"));
-        assert_eq!(garble_replacement("ver"), Some("fehr"));
-        assert_eq!(garble_replacement("z"), Some("zs"));
+    fn no_match_returns_unchanged() {
+        assert_eq!(garble_replace_all("xy"), "xy");
+        assert_eq!(garble_replace_all(""), "");
+        assert_eq!(garble_replace_all("b"), "b");
     }
 
     #[test]
-    fn lookup_is_case_insensitive() {
-        assert_eq!(garble_replacement("AA"), Some("aah"));
-        assert_eq!(garble_replacement("Ver"), Some("fehr"));
+    fn multiple_replacements() {
+        assert_eq!(garble_replace_all("aaz"), "aahzs");
     }
 
     #[test]
-    fn lookup_returns_none_for_unknown() {
-        assert_eq!(garble_replacement("xyz"), None);
-        assert_eq!(garble_replacement(""), None);
-    }
-
-    #[test]
-    fn all_entries_are_matchable() {
-        let re = garble_regex();
-        for (key, _) in GARBLE_PHRASES {
-            assert!(re.is_match(key), "regex should match key '{key}'");
-        }
-    }
-
-    #[test]
-    fn all_entries_have_replacements() {
+    fn all_entries_replace_correctly() {
         for (key, expected) in GARBLE_PHRASES {
             assert_eq!(
-                garble_replacement(key),
-                Some(*expected),
+                garble_replace_all(key),
+                *expected,
                 "replacement for '{key}' should be '{expected}'"
             );
         }

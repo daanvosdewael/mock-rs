@@ -1,20 +1,12 @@
-use crate::phrases::{garble_regex, garble_replacement};
-
-#[cfg(not(feature = "wasm"))]
-use regex::Captures;
-#[cfg(feature = "wasm")]
-use regex_lite::Captures;
+use crate::phrases::garble_replace_all;
 
 pub fn dress_word(word: &str) -> String {
-    let re = garble_regex();
     let lower = word.to_lowercase();
-    if re.is_match(&lower) {
-        re.replace_all(&lower, |caps: &Captures| {
-            garble_replacement(&caps[0]).unwrap_or(&caps[0]).to_string()
-        })
-        .into_owned()
-    } else {
+    let replaced = garble_replace_all(&lower);
+    if replaced == lower {
         word.to_string()
+    } else {
+        replaced
     }
 }
 
