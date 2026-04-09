@@ -5,13 +5,6 @@ resolver = "2"
 [profile.release]
 lto = true
 panic = "abort"
-
-[profile.release.package.mock-cli]
-opt-level = "z"
-codegen-units = 1
-strip = true
-
-[profile.release.package.mock-wasm]
 opt-level = "z"
 codegen-units = 1
 strip = true
