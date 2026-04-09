@@ -11,7 +11,7 @@ fn apply_case(c: char, special: char, invert: bool) -> char {
     }
 }
 
-pub fn correct_word(word: &str) -> String {
+pub fn apply_specials(word: &str) -> String {
     if !word.chars().any(is_special) {
         return word.to_string();
     }
@@ -57,90 +57,90 @@ mod tests {
 
     #[test]
     fn empty_string() {
-        assert_eq!(correct_word(""), "");
+        assert_eq!(apply_specials(""), "");
     }
 
     #[test]
     fn no_specials() {
-        assert_eq!(correct_word("abc"), "abc");
-        assert_eq!(correct_word("xYzW"), "xYzW");
+        assert_eq!(apply_specials("abc"), "abc");
+        assert_eq!(apply_specials("xYzW"), "xYzW");
     }
 
     #[test]
     fn single_special_chars() {
-        assert_eq!(correct_word("e"), "e");
-        assert_eq!(correct_word("i"), "i");
-        assert_eq!(correct_word("l"), "L");
-        assert_eq!(correct_word("o"), "o");
+        assert_eq!(apply_specials("e"), "e");
+        assert_eq!(apply_specials("i"), "i");
+        assert_eq!(apply_specials("l"), "L");
+        assert_eq!(apply_specials("o"), "o");
     }
 
     #[test]
     fn single_special_uppercase() {
-        assert_eq!(correct_word("E"), "e");
-        assert_eq!(correct_word("I"), "i");
-        assert_eq!(correct_word("L"), "l");
-        assert_eq!(correct_word("O"), "o");
+        assert_eq!(apply_specials("E"), "e");
+        assert_eq!(apply_specials("I"), "i");
+        assert_eq!(apply_specials("L"), "l");
+        assert_eq!(apply_specials("O"), "o");
     }
 
     #[test]
     fn hello_alternated() {
         // alternate_word("hello") = "hElLo" → correct → "HeLlo"
-        assert_eq!(correct_word("hElLo"), "HeLlo");
+        assert_eq!(apply_specials("hElLo"), "HeLlo");
     }
 
     #[test]
     fn lllll_alternated() {
         // alternate_word("lllll") = "LlLlL" → correct → "lLlLl"
-        assert_eq!(correct_word("LlLlL"), "lLlLl");
+        assert_eq!(apply_specials("LlLlL"), "lLlLl");
     }
 
     #[test]
     fn eeeee_alternated() {
         // alternate_word("eeeee") = "eEeEe" → correct → "eEeEe"
-        assert_eq!(correct_word("eEeEe"), "eEeEe");
+        assert_eq!(apply_specials("eEeEe"), "eEeEe");
     }
 
     #[test]
     fn special_at_start_with_next() {
         // 'e' at 0: no prev, self→lower, next→upper
-        assert_eq!(correct_word("eA"), "eA");
-        assert_eq!(correct_word("ea"), "eA");
+        assert_eq!(apply_specials("eA"), "eA");
+        assert_eq!(apply_specials("ea"), "eA");
     }
 
     #[test]
     fn special_at_end() {
         // 'E' at 1: prev→upper, self→lower
-        assert_eq!(correct_word("aE"), "Ae");
+        assert_eq!(apply_specials("aE"), "Ae");
     }
 
     #[test]
     fn consecutive_specials() {
-        assert_eq!(correct_word("eL"), "el");
+        assert_eq!(apply_specials("eL"), "el");
     }
 
     #[test]
     fn foobar_alternated() {
         // alternate_word("foobar") = "fOoBaR" → correct → "FooBaR"
-        assert_eq!(correct_word("fOoBaR"), "FooBaR");
+        assert_eq!(apply_specials("fOoBaR"), "FooBaR");
     }
 
     #[test]
     fn test_alternated() {
         // alternate_word("test") = "TeSt" → correct → "TeSt"
-        assert_eq!(correct_word("TeSt"), "TeSt");
+        assert_eq!(apply_specials("TeSt"), "TeSt");
     }
 
     #[test]
     fn numbers_and_punctuation() {
-        assert_eq!(correct_word("123"), "123");
-        assert_eq!(correct_word("!@#"), "!@#");
+        assert_eq!(apply_specials("123"), "123");
+        assert_eq!(apply_specials("!@#"), "!@#");
     }
 
     #[test]
     fn l_lowercase_vs_uppercase_differ() {
         // lowercase 'l': self→upper, surrounding→lower
         // uppercase 'L': self→lower, surrounding→upper (like e/i/o)
-        assert_eq!(correct_word("alb"), "aLb");
-        assert_eq!(correct_word("aLb"), "AlB");
+        assert_eq!(apply_specials("alb"), "aLb");
+        assert_eq!(apply_specials("aLb"), "AlB");
     }
 }
