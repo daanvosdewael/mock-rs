@@ -57,6 +57,6 @@ fn main() {
         eprintln!("error: no input provided");
         std::process::exit(1);
     }
-    let output = mock_core::build_mocking_text(input, garble);
+    let output = mock::build_mocking_text(input, garble);
     println!("{output}");
 }

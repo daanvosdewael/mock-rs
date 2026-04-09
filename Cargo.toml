@@ -1,6 +1,15 @@
-[workspace]
-members = ["crates/mock-core", "crates/mock-cli", "crates/mock-wasm"]
-resolver = "2"
+[package]
+name = "mock"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "mock"
+path = "src/main.rs"
+
+[lib]
+name = "mock"
+path = "src/lib.rs"
 
 [profile.release]
 lto = true

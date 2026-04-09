@@ -1,4 +1,4 @@
-use mock_core::build_mocking_text;
+use mock::build_mocking_text;
 
 const NORMAL_CASES: &[(&str, &str)] = &[
     ("", ""),
