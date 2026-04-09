@@ -1,2 +1,6 @@
-/target
-crates/mock-wasm/pkg/
+# System
+.DS_Store
+
+# Build outputs
+target
+crates/mock-wasm/pkg
