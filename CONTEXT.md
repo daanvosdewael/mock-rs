@@ -15,10 +15,10 @@ The set `{ e, i, l, o }` (case-insensitive). Each special character has a weight
 
 The set drives two stage decisions:
 
-- **`alternate` stage** — sums the weights of specials at even vs. odd positions in a word. The sign of `(even_sum - odd_sum)` determines which positions get uppercased ("case policy" for the word).
+- **`alternate` stage** — applies the word's **case policy** (`specials::case_policy`) per character. The policy is `UpperEven` when `even_sum < odd_sum` over the word's specials, otherwise `UpperOdd` (also the default for words with no specials).
 - **`correct` stage** — when a special character is encountered in the alternated output, the special and its immediate neighbors are case-rewritten. `l` inverts the rule (its neighbors become *lower* and the `l` itself becomes *upper*); `e`/`i`/`o` apply the non-inverted rule.
 
-Defined once in `src/specials.rs` as `is_special(c) -> bool` and `special_weight(c) -> i32`. Both `alternate` and `correct` consume it; no other module knows the set.
+Defined once in `src/specials.rs`: `case_policy(word) -> CasePolicy` (consumed by `alternate`), `is_special(c) -> bool` (consumed by `correct`). The weight table is a private detail of `case_policy`. No other module knows the set.
 
 ## Pipeline
 

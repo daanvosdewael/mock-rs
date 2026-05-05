@@ -1,32 +1,11 @@
-use crate::specials::{is_special, special_weight};
-
-fn should_uppercase(word: &str, char_index: usize) -> bool {
-    let mut even_index_sum: i32 = 0;
-    let mut odd_index_sum: i32 = 0;
-
-    for (i, c) in word.chars().enumerate() {
-        if !is_special(c) {
-            continue;
-        }
-        if i % 2 == 0 {
-            even_index_sum += special_weight(c);
-        } else {
-            odd_index_sum += special_weight(c);
-        }
-    }
-
-    if even_index_sum < odd_index_sum {
-        char_index.is_multiple_of(2)
-    } else {
-        !char_index.is_multiple_of(2)
-    }
-}
+use crate::specials::case_policy;
 
 pub fn alternate_word(word: &str) -> String {
+    let policy = case_policy(word);
     word.chars()
         .enumerate()
         .map(|(i, c)| {
-            if should_uppercase(word, i) {
+            if policy.is_upper_at(i) {
                 c.to_uppercase().to_string()
             } else {
                 c.to_string()
