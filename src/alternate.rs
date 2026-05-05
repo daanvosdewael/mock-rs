@@ -1,16 +1,4 @@
-fn special_weight(c: char) -> i32 {
-    match c.to_ascii_lowercase() {
-        'e' => 2,
-        'i' => 3,
-        'l' => -2,
-        'o' => 2,
-        _ => 0,
-    }
-}
-
-fn is_special(c: char) -> bool {
-    matches!(c.to_ascii_lowercase(), 'e' | 'i' | 'l' | 'o')
-}
+use crate::specials::{is_special, special_weight};
 
 fn should_uppercase(word: &str, char_index: usize) -> bool {
     let mut even_index_sum: i32 = 0;
