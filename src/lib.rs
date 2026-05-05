@@ -3,9 +3,9 @@ mod correct;
 mod garble;
 mod specials;
 
-pub use alternate::alternate_word;
-pub use correct::correct_word;
-pub use garble::garble_word;
+use alternate::alternate_word;
+use correct::correct_word;
+use garble::garble_word;
 
 pub fn build_mocking_text(input: &str, garble: bool) -> String {
     input
